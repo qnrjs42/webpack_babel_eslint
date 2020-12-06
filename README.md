@@ -1,6 +1,6 @@
-## 웹팩을 사용하는 이유
+# 웹팩을 사용하는 이유
 
-### 문제점 
+## 문제점 
 
 ```js
 // src/math.js
@@ -28,7 +28,7 @@ console.log(sum(1, 2));
 
 ```
 
-### 해결책 IIFE(즉시 실행 함수 표현) 방식의 모듈
+## 해결책 IIFE(즉시 실행 함수 표현) 방식의 모듈
 
 ```js
 // src/math.js
@@ -76,4 +76,41 @@ export function sum(a, b) { return a + b; }
 // src/app.js
 import * as math from './math.js';
 math.sum(1, 2);
+```
+
+<br/>
+
+---
+
+## webpack 설치
+
+```
+npm i -D webpack webpack-cli
+```
+
+## webpack 실행
+
+```
+- powershell에서 안 되고,
+- /(슬래시) \(역슬래시) 구분해야 함
+
+node_modules\.bin\webpack --mode development --entry ./src/app.js --output-path dist/main.js 
+```
+
+<br/>
+
+```js
+// webpack.config.js
+const path = require('path');
+
+module.exports = {
+    mode: 'development', // 개발모드
+    entry: {
+        main: './src/app.js' // 주 파일
+    },
+    output: {
+        path: path.resolve('./dist'), // dist 폴더로 선택
+        filename: '[name].js' // 번들링될 파일 명 | entry에서 설정된 키 값, 즉 main으로 설정
+    }
+}
 ```
