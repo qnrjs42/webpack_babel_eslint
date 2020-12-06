@@ -1,0 +1,22 @@
+{
+  "name": "webpack_babel_eslint",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qnrjs42/webpack_babel_eslint.git"
+  },
+  "author": "qnrjs42",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qnrjs42/webpack_babel_eslint/issues"
+  },
+  "homepage": "https://github.com/qnrjs42/webpack_babel_eslint#readme",
+  "dependencies": {
+    "react": "^17.0.1"
+  }
+}
