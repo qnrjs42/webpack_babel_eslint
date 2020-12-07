@@ -168,3 +168,33 @@ module.exports = {
 <br/>
 
 ---
+
+## 로더
+
+```
+웹팩은 모든 파일을 모듈로 바라봄.
+자바스크립트로 만든 모듈,  스타일시트, 이미지, 폰트까지 전부 모듈로 봐서 import 구문을 사용하면 자바스크립트 코드 안으로 가져올 수 있다.
+
+로더는 TS같은 다른 언어를 자바스크립트 문법으로 변환하거나 이미지를 data URL 형식의 문자열로 변환한다.
+뿐만 아니라 CSS 파일을 자바스크립트에서 직접 로딩할 수 있도록 해준다.
+```
+
+```js
+// webpack.config.js
+
+output: {
+  path: path.resolve("./dist"),
+  filename: "[name].js",
+},
+module: {
+  rules: [
+    {
+      test: /\.js$/,
+      use: [path.resolve("./my-webpack-loader.js")],
+    },
+  ],
+},
+
+// test: 모든 js 파일들을 거쳐서
+// use: 커스텀한 로더 함수 실행
+```
