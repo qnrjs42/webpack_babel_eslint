@@ -18,7 +18,11 @@
   },
   "homepage": "https://github.com/qnrjs42/webpack_babel_eslint#readme",
   "dependencies": {
-    "react": "^17.0.1"
+    "css-loader": "^5.0.1",
+    "file-loader": "^6.2.0",
+    "react": "^17.0.1",
+    "style-loader": "^2.0.0",
+    "url-loader": "^4.1.1"
   },
   "devDependencies": {
     "webpack": "^5.10.0",

@@ -198,3 +198,61 @@ module: {
 // test: 모든 js 파일들을 거쳐서
 // use: 커스텀한 로더 함수 실행
 ```
+
+<br/>
+
+---
+
+### 자주 사용하는 로더
+
+- npm i css-loader style-loader file-loader url-loader
+
+```js
+// app.js
+
+import './app.css';
+import nyancat from './nyancat.jpg';
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.innerHTML = `
+    <img src="${nyancat}" />
+  `
+})
+```
+
+```js
+// webpack.config.js
+module: {
+  rules: [{
+      test: /\.css$/,
+      use: [
+        'style-loader',
+        'css-loader'
+      ]
+    },
+    {
+      test: /\.(png|jpg|gif|svg)$/,
+      loader: 'url-loader',
+      options: {
+        publicPath: './dist/'
+        name: '[name].[ext]?[hash]',
+        limit: 20000,
+      }
+    }
+  ],
+},
+
+test: /\.css$/, // 모든 css 파일
+use: ['style-loader','css-loader']
+// 두 가지 로더를 사용해서 css를 불러서 사용할 수 있음
+// 순서는 css-loader -> style-loader순. 뒤에서부터 시작
+
+test: /\.(png|jpg|gif|svg)$/, // 해당 이미지 파일들
+loader: 'url-loader', // use 대신
+options: {
+  publicPath: './dist/', // file-loader가 처리할 경로
+  name: '[name].[ext]?[hash]', // 파일명.확장자?해쉬무력화
+  limit: 20000, // url-loader가 test의 파일을 처리할 때 20kb 미만인 파일은 url-loader로 base64로 변환
+  // 20kb 이상인 경우 file-loader가 실행
+}
+```
