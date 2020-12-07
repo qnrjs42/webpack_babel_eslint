@@ -5,7 +5,7 @@
 ```js
 // src/math.js
 function sum(a, b) {
-    return a + b;
+  return a + b;
 }
 
 // src/app.js
@@ -14,8 +14,8 @@ console.log(sum(1, 2));
 
 ```html
 <body>
-    <script src="src/math.js"></script>
-    <script src="src/app.js"></script>
+  <script src="src/math.js"></script>
+  <script src="src/app.js"></script>
 </body>
 ```
 
@@ -34,12 +34,12 @@ console.log(sum(1, 2));
 // src/math.js
 var math = math || {};
 
-(function() {
-    function sum(a, b) {
-      return a + b;
-    }
+(function () {
+  function sum(a, b) {
+    return a + b;
+  }
 
-    math.sum = sum;
+  math.sum = sum;
 })();
 
 // src/app.js
@@ -95,6 +95,8 @@ npm i -D webpack webpack-cli
 - /(슬래시) \(역슬래시) 구분해야 함
 
 node_modules\.bin\webpack --mode development --entry ./src/app.js --output-path dist/main.js 
+
+node_modules/.bin/webpack --mode development --entry ./src/app.js --output-path dist/main.js 
 ```
 
 <br/>
@@ -104,13 +106,65 @@ node_modules\.bin\webpack --mode development --entry ./src/app.js --output-path 
 const path = require('path');
 
 module.exports = {
-    mode: 'development', // 개발모드
-    entry: {
-        main: './src/app.js' // 주 파일
-    },
-    output: {
-        path: path.resolve('./dist'), // dist 폴더로 선택
-        filename: '[name].js' // 번들링될 파일 명 | entry에서 설정된 키 값, 즉 main으로 설정
-    }
+  mode: 'development', // 개발모드
+  entry: {
+    main: './src/app.js' // 주 파일
+  },
+  output: {
+    path: path.resolve('./dist'), // dist 폴더로 선택
+    filename: '[name].js' // 번들링될 파일 명 | entry에서 설정된 키 값, 즉 main으로 설정
+  }
+}
+
+// mode: 'development'
+// entry: 어플리케이션 진입점인 src/app.js
+// output에 설정한 [name]은 entry에 추가한 main이 문자열로 들어옴
+```
+
+<br/>
+
+---
+
+## webpack 설정 순서
+
+### 1. npm i webpack webpack-cli
+
+
+### 2. package.json
+
+```json
+"scripts": {
+ "build": "webpack"
 }
 ```
+
+### 3. webpack.config.js
+
+```js
+const path = require('path');
+
+module.exports = {
+  mode: 'development',
+  entry: {
+    main: './src/app.js'
+  },
+  output: {
+    path: path.resolve('./dist'),
+    filename: '[name].js'
+  }
+}
+```
+
+### 4. load script
+```html
+<body>
+  ...
+  <script src="dist/main.js"></script>
+</body>
+```
+
+### 5. npm run build
+
+<br/>
+
+---
