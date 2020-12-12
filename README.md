@@ -265,3 +265,157 @@ options: {
 로더가 파일 단위로 처리하는 반면 플러그인은 번들된 결과물을 처리.
 번들된 자바스크립트를 난독화 한다거나 특정 텍스트를 추출하는 용도로 사용.
 ```
+
+<br/>
+
+### BannerPlugin
+- 결과물에 빌드 정보나 커밋 버전같은 걸 추가할 수 있다.
+
+
+```js
+// webpack.config.js
+
+const webpack = require('webpack');
+
+module.exports = {
+  plugins: [
+    new webpack.BannerPlugin({
+      banner: '이것은 배너 입니다.',
+    })
+  ]
+}
+
+또는
+배너 정보가 많다면 별도 파일로 분리
+new webpack.BannerPlugin({
+  banner: () => `빌드 날짜: ${new Date().toLocalsString()}`
+})
+```
+
+<br/>
+
+### DefinePlugin
+- 개발환경, 운영환경나눠서 운영 환경에 따라 API 서버 주소가 다를 수 있다.
+- 배포할 때마다 코드를 수정하면 에러 발생이 쉬움.
+
+```js
+// webpack.config.js
+
+const webpack = require('webpack');
+
+module.exports = {
+  plugins: [
+    new webpack.DefinePlugin({
+      TWO: JSON.stringify("1+1"),
+      'api.domain': JSON.stringify('http://dev/api/domain.com')
+    }),
+  ]
+}
+```
+
+```js
+// ./src/app.js
+
+console.log(process.env.NODE_ENV);
+console.log(TWO); // '1+1'
+console.log(api.domain); // http://dev/api/domain.com
+```
+
+<br/>
+
+### HtmlTemplatePlugin
+- HTML 후처리하는데 사용. 빌드 타임의 값을 넣거나 코드를 압축
+
+```
+npm i html-webpack-plugin
+```
+
+```html
+<!-- src/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>타이틀<%= env %></title>
+</head>
+<body>
+  <!-- 로딩 스크립트 제거 -->
+  <!-- <script src="dist/main.js"></script> -->
+</body>
+</html>
+```
+
+```js
+// webpack.config.js
+
+new HtmlWebpackPlugin({
+  template: './src/index.html',
+  templateParameters: {
+    env: process.env.NODE_ENV === 'development' ? '(개발용)' : ''
+  },
+  minify: process.env.NODE_ENV === 'production' ?  { // 배포모드일 때만 하는게 효과적
+    collapseWhitespace: true, // 빈칸 제거
+    removeComments: true // 주석 제거
+  } : false
+})
+```
+
+<br/>
+
+### CleanWebpackPlugin
+- 빌드 이전 결과물을 제거하는 플러그인.
+- 즉, 빌드할 때마다 'dist'폴더를 지웠다가 새로 생성한다.
+- 빌드 결과물은 아웃풋 경로에 모이는데 과거 파일이 남아 있을 수 있다.
+- 이전 빌드내용이 덮여 씌여지면 상관없지만 그렇지 않으면 아웃풋 폴더에 여전히 남아 있을 수 있다.
+
+```
+npm i clean-webpack-plugin
+```
+```js
+// webpack.config.js
+const { CleanWebpackPlugin }  = require("clean-webpack-plugin");
+
+plugins: [
+  new CleanWebpackPlugin({})
+],
+```
+
+<br/>
+
+### MiniCssExtractPlugin
+- css를 별도 파일로 뽑아내는 플러그인.
+- css가 점점 많아지면 하나의 자바스크립트 결과물로 만드는 것이 부담일 수 있다.
+- 번들 결과에서 css 코드만 뽑아서 별도의 css 파일로 만들어 역할에 따라 파일을 분리하는 것이 좋다.
+- 브라우저에서 큰 파일 하나를 내려받는 것 보다, 여러 개 작은 파일을 동시에 다운로드하는 것이 더 빠르다.
+- 개발환경에서는 css를 하나의 모듈로 처리해도 상관없지만 프로덕션 환경에서는 분리하는 것이 효과적이다.
+
+
+```
+npm i mini-css-extract-plugin
+```
+```js
+// webpack.config.js
+const { CleanWebpackPlugin }  = require("mini-css-extract-plugin");
+
+use: [
+  {
+    loader:
+      process.env.NODE_ENV === "production"
+        ? MiniCssExtractPlugin.loader
+        : "style-loader",
+    options: {
+      publicPath: ''
+    }
+  },
+  {
+    loader: "css-loader",
+  },
+],
+
+plugins: [
+  ...(process.env.NODE_ENV === 'production' ?
+   [new MiniCssExtractPlugin({
+    filename: '[name].css'
+  })] : [])
+],
+```
