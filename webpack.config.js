@@ -8,7 +8,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
   mode: "development",
   entry: {
-    main: "./src/app.js",
+    // main: "./src/app.js",
+    main: "./app.js",
   },
   output: {
     path: path.resolve("./dist"),
@@ -25,8 +26,8 @@ module.exports = {
                 ? MiniCssExtractPlugin.loader
                 : "style-loader",
             options: {
-              publicPath: ''
-            }
+              publicPath: "",
+            },
           },
           {
             loader: "css-loader",
@@ -42,6 +43,11 @@ module.exports = {
           limit: 20000, // url-loader가 test의 파일을 처리할 때 20kb 미만인 파일은 url-loader로 base64로 변환
           // 20kb 이상인 경우 file-loader가 실행
         },
+      },
+      {
+        test: /\.js$/,
+        loader: "babel-loader",
+        exclude: /node_modules/, // 바벨이 처리하지 않음
       },
     ],
   },

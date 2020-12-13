@@ -29,7 +29,7 @@ const alert = msg => window.alert(msg);
 
 <br/>
 
-### Identifier
+## Identifier
 
 ```js
 // my-babel-plugin.js
@@ -70,7 +70,7 @@ const trela = gsm => wodniw.trela(gsm);
 
 <br/>
 
-### VariableDeclaration
+## VariableDeclaration
 
 ```js
 // my-babel-plugin.js
@@ -103,7 +103,7 @@ var alert = msg => window.alert(msg);
 
 <br/>
 
-### @babel/plugin-transform-block-scoping
+## @babel/plugin-transform-block-scoping
 
 <br/>
 
@@ -140,7 +140,7 @@ var alert = msg => window.alert(msg);
 
 <br/>
 
-### @babel/plugin-transform-arrow-functions
+## @babel/plugin-transform-arrow-functions
 
 ```
 npm i @babel/plugin-transform-arrow-functions
@@ -172,7 +172,7 @@ var alert = function (msg) {
 
 <br/>
 
-### @babel/plugin-transform-strict-mode
+## @babel/plugin-transform-strict-mode
 - 'use strict' 구문
 
 ```
@@ -192,7 +192,7 @@ var alert = function (msg) {
 ```
 
 
-### babel.config.js
+## babel.config.js
 
 ```js
 // babel.config.js
@@ -218,7 +218,7 @@ var alert = function (msg) {
 };
 ```
 
-### 프리셋
+## 프리셋
 - 목적에 맞게 여러가지 플로그인을 세트로 모아놓는 것을 '프리셋'이라 한다.
 
 ```js
@@ -255,6 +255,212 @@ npx babel app.js
 var alert = function (msg) {
   return window.alert(msg); 
 };
+```
+
+<br/>
+
+## 프리셋 사용하기
+- preset-env
+- preset-flow
+- preset-react
+- preset-typescript
+
+preset-env는 연도별로 프리셋을 제공했지만 env 하나로 합쳐짐
+
+```
+npm i @babel/preset-env
+```
+
+```js
+// babel.config.js
+
+module.exports = {
+  presets: [
+    '@babel/preset-env'
+  ]
+};
+```
+
+```
+// 실행방법
+npx babel app.js
+
+// 실행결과
+"use strict";
+
+var alert = function (msg) {
+  return window.alert(msg); 
+};
+```
+
+### 타겟 브라우저
+- target 옵션에 브라우저 버전명만 지정하면 env 프리셋은 이에 맞는 플러그인을 찾아 최적의 코드를 출력
+
+```js
+// babel.config.js
+
+module.exports = {
+  presets: [
+    [
+      "@babel/preset-env",
+      {
+        targets: {
+          chrome: "79", // 크롬 79까지 지원하는 코드를 만듦
+        },
+      },
+    ],
+  ],
+};
+```
+
+```
+// 실행방법
+npx babel app.js
+
+// 실행결과
+"use strict";
+
+const alert = msg => window.alert(msg);
+```
+
+<br/>
+
+```js
+// babel.config.js
+
+module.exports = {
+  presets: [
+    [
+      "@babel/preset-env",
+      {
+        targets: {
+          chrome: "79", // 크롬 79까지 지원하는 코드를 만듦
+          ie: '11'
+        },
+      },
+    ],
+  ],
+};
+```
+
+```
+// 실행방법
+npx babel app.js
+
+// 실행결과
+"use strict";
+
+var alert = function alert(msg) {
+  return window.alert(msg);
+};
+```
+
+<br/>
+
+### primise()
+
+```js
+// app.js
+new Promise();
+```
+
+```js
+// babel.config.js
+
+module.exports = {
+  presets: [
+    [
+      "@babel/preset-env",
+      {
+        targets: {
+          chrome: "79", // 크롬 79까지 지원하는 코드를 만듦
+          ie: '11'
+        },
+      },
+    ],
+  ],
+};
+```
+
+```
+// 실행방법
+npx babel app.js
+
+// 실행결과
+"use strict";
+
+new Promise();
+```
+
+promise()는 크롬에선 지원하나 IE는 지원하지 않는다.
+
+primise()는 ES5로 대체할 수 없으나 구현은 할 수 있다.
+
+
+```js
+// babel.config.js
+
+module.exports = {
+  presets: [
+    [
+      "@babel/preset-env",
+      {
+        targets: {
+          chrome: "79", // 크롬 79까지 지원하는 코드를 만듦
+          ie: '11'
+        },
+        useBuiltIns: 'usage', // 'entry', false
+        corejs: {
+          version: 2, // 3
+        }
+      },
+    ],
+  ],
+};
+```
+
+```
+// 실행방법
+npx babel app.js
+
+// 실행결과
+"use strict";
+
+require("core-js/modules/es6.promise");
+
+require("core-js/modules/es6.object.to-string");
+
+new Promise();
+```
+
+<br/>
+
+## 웹팩 통합
+
+```
+npm i babel-loader
+npm i core-js@2
+```
+
+```js
+// webpack.config.js
+
+entry: {
+  // main: "./src/app.js",
+  main: "./app.js",
+},
+
+rules: [
+  {
+    test: /\.js$/,
+    loader: "babel-loader",
+    exclude: /node_modules/, // 바벨이 처리하지 않음
+  },
+],
+```
+
+```
+npm run build
 ```
 
 <br/>
