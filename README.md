@@ -1,3 +1,266 @@
+# 바벨
+- 크로스브라우징의 혼란을 해결해 줄 수 있는 것이 바벨.
+- ES6+로 작성한 코드를 모든 브라우저에서 동작하도록 호환성을 지켜줌
+- 바벨로 변환하는 것을 '트랜스파일'이라고 한다.
+- 트랜스파일은 추상화 수준을 유지한 상태로 코드를 변환
+
+```
+npm i @babel/core @babel/cli
+```
+
+```
+// 실행방법
+npx babel app.js
+
+// 실행결과
+const alert = msg => window.alert(msg);
+```
+
+바벨은 3 단계로 빌드를 진행
+1. 파싱(Parsing)
+2. 변환(Transforming)
+3. 출력(Printing)
+
+<br/>
+
+- 코드를 읽고 추상 구문 트리(AST)로 변환하는 단계: 파싱
+- 추상 구문 트리를 변경하는 것: 변환
+- 변경된 결과물: 출력
+
+<br/>
+
+### Identifier
+
+```js
+// my-babel-plugin.js
+
+module.exports = function mybabelPlugin() {
+  return {
+    // 커스텀 플러그인 만들 때 'visitor'라는 객체를 반환 해줘야 한다
+    visitor: {
+      Identifier(path) {
+        const name = path.node.name;
+
+        // 바벨이 만든 AST 노드를 출력
+        console.log('Identifier() name:', name);
+
+        // 변환작업: 코드 문자열을 역순으로 변환
+        path.node.name = name
+        .split("") // 문자열을 하나씩 쪼갬
+        .reverse() // 문자열을 뒤집음
+        .join(""); // 문자열을 합침
+      }
+    }
+  }
+}
+```
+
+```
+// 실행방법
+npx babel app.js --plugins './my-babel-plugin.js'
+
+// 실행결과
+Identifier() name: alert
+Identifier() name: msg
+Identifier() name: window
+Identifier() name: alert
+Identifier() name: msg
+const trela = gsm => wodniw.trela(gsm);
+```
+
+<br/>
+
+### VariableDeclaration
+
+```js
+// my-babel-plugin.js
+
+module.exports = function mybabelPlugin() {
+  return {
+    // 커스텀 플러그인 만들 때 'visitor'라는 객체를 반환 해줘야 한다
+    visitor: {
+      VariableDeclaration(path) {
+        console.log("VariableDeclaration() kind", path.node.kind);
+
+        // const => var 변환
+        if(path.node.kind === 'const') {
+          path.node.kind = 'var'
+        }
+      }
+    }
+  }
+}
+```
+
+```
+// 실행방법
+npx babel app.js --plugins './my-babel-plugin.js'
+
+// 실행결과
+VariableDeclaration() kind const
+var alert = msg => window.alert(msg);
+```
+
+<br/>
+
+### @babel/plugin-transform-block-scoping
+
+<br/>
+
+이러한 결과를 만드는 것이 'block-scoping' 플러그인.<br/>
+const, let 처럼 블록 스코핑을 따르는 예약어를 함수 스코핑을 사용하는 var로 변경한다.
+
+```
+npm i @babel/plugin-transform-block-scoping
+```
+
+```js
+// example
+
+// In
+{
+  let a = 3;
+}
+let a = 3
+
+// Out
+{
+  var _a = 3;
+}
+var a = 3;
+```
+
+```
+// 실행방법
+npx babel app.js --plugins @babel/plugin-transform-block-scoping
+
+// 실행결과
+var alert = msg => window.alert(msg);
+```
+
+<br/>
+
+### @babel/plugin-transform-arrow-functions
+
+```
+npm i @babel/plugin-transform-arrow-functions
+```
+
+```js
+// example
+
+// In
+var a = () => {};
+var a = (b) => b;
+
+// Out
+var a = function() {};
+var a = function(b) {
+  return b;
+}
+```
+
+```
+// 실행방법
+npx babel app.js --plugins @babel/plugin-transform-block-scoping  --plugins @babel/plugin-transform-arrow-functions
+
+// 실행결과
+var alert = function (msg) {
+  return window.alert(msg);
+};
+```
+
+<br/>
+
+### @babel/plugin-transform-strict-mode
+- 'use strict' 구문
+
+```
+npm i @babel/plugin-transform-strict-mode
+```
+
+```
+// 실행방법
+npx babel app.js --plugins @babel/plugin-transform-block-scoping  --plugins @babel/plugin-transform-arrow-functions --plugins @babel/plugin-transform-strict-mode
+
+// 실행결과
+"use strict";
+
+var alert = function (msg) {
+  return window.alert(msg); 
+};
+```
+
+
+### babel.config.js
+
+```js
+// babel.config.js
+
+module.exports = {
+  plugins: [
+    "@babel/plugin-transform-block-scoping",
+    "@babel/plugin-transform-arrow-functions",
+    "@babel/plugin-transform-strict-mode",
+  ],
+};
+```
+
+```
+// 실행방법
+npx babel app.js
+
+// 실행결과
+"use strict";
+
+var alert = function (msg) {
+  return window.alert(msg); 
+};
+```
+
+### 프리셋
+- 목적에 맞게 여러가지 플로그인을 세트로 모아놓는 것을 '프리셋'이라 한다.
+
+```js
+// my-babel-preset.js
+
+module.exports = function myBabelPreset() {
+  return {
+    plugins: [
+      "@babel/plugin-transform-block-scoping",
+      "@babel/plugin-transform-arrow-functions",
+      "@babel/plugin-transform-strict-mode",
+    ],
+  };
+}
+```
+
+```js
+// babel.config.js
+
+module.exports = {
+  presets: [
+    './my-babel-preset.js'
+  ]
+};
+```
+
+```
+// 실행방법
+npx babel app.js
+
+// 실행결과
+"use strict";
+
+var alert = function (msg) {
+  return window.alert(msg); 
+};
+```
+
+<br/>
+
+---
+
 # 웹팩을 사용하는 이유
 
 ## 문제점 
