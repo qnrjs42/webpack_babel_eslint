@@ -1,3 +1,209 @@
+# 린트
+- 코드 오류나 버그, 스타일 따위를 점검하는 것을 린트 혹은 린터라고 한다.
+
+```
+npm i eslint
+```
+
+## 예시
+
+```js
+console.log()
+(function() {})()
+```
+```js
+// 실행결과
+TypeError: console.log(...) is not a function
+
+// 이유
+console.log();
+(function() {})();
+가 아니라
+
+console.log()(function() {})() 으로 인식하게 된다.
+```
+
+<br/>
+
+```js
+// app.js
+console.log()
+(function() {})()
+```
+
+```js
+// eslintrc.js
+module.exports = {
+  
+}
+```
+
+```
+npx eslint app.js
+-> 아무런 반응 없음
+```
+
+<br/>
+
+## 규칙 (Rules)
+
+### no-unexpected-multiline
+
+```js
+// eslintrc.js
+module.exports = {
+  rules: {
+    "no-unexpected-multiline": "error"
+  }
+}
+```
+
+```
+npx eslint app.js
+-> 
+2:1  error  Unexpected newline between function and ( of function call  no-unexpected-multiline
+
+✖ 1 problem (1 error, 0 warnings)
+```
+
+### no-extra-semi
+
+```js
+// app.js
+console.log();;;
+(function () {})();
+```
+
+```js
+// eslintrc.js
+module.exports = {
+  rules: {
+    "no-unexpected-multiline": "error"
+  }
+}
+```
+
+```
+npx eslint app.js
+-> 
+ 1:15  error  Unnecessary semicolon  no-extra-semi
+  1:16  error  Unnecessary semicolon  no-extra-semi
+
+✖ 2 problems (2 errors, 0 warnings)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+```
+
+```
+npx eslint app.js --fix
+```
+
+```js
+// app.js
+// --fix로 인해 자동으로 불필요한 세미콜론이 제거되었다.
+console.log();
+(function () {})();
+```
+
+<br/>
+
+### Extensible Config
+- 여러 규칙들을 미리 정해 놓은 것이 eslint:recommened 설정.
+- eslint 사이트 규칙 목록 중에 왼쪽에 체크 표시되어 있는 것이 이 설정에서 활성화 되어 있는 규칙이다.
+
+```js
+// eslintrc.js
+module.exports = {
+  extneds: [
+    "eslint:recommended", // 미리 설정된 규칙 세트
+  ]
+}
+```
+
+```
+npx eslint app.js --fix
+```
+
+<br/>
+
+## 초기화 
+
+```
+npx eslint --init
+
+// 코드 포맷팅과 품질까지 체크
+? How would you like to use ESLint? ... 
+  To check syntax only
+> To check syntax and find problems
+  To check syntax, find problems, and enforce code style
+
+// 지금 사용 중인 모듈
+√ How would you like to use ESLint? · problems    
+? What type of modules does your project use? ... 
+> JavaScript modules (import/export)
+  CommonJS (require/exports)
+  None of these
+
+// 지금 사용 중인 프레임워크
+√ How would you like to use ESLint? · problems    
+√ What type of modules does your project use? · esm
+? Which framework does your project use? ... 
+  React
+  Vue.js
+> None of these
+
+// 타입스크립트 유무
+√ How would you like to use ESLint? · problems    
+√ What type of modules does your project use? · esm
+√ Which framework does your project use? · none
+? Does your project use TypeScript? » No / Yes
+
+// 현재 코드가 브라우저에서 돌아가나, 노드에서 돌아가나
+√ How would you like to use ESLint? · problems    
+√ What type of modules does your project use? · esm
+√ Which framework does your project use? · none
+√ Does your project use TypeScript? · No / Yes
+? Where does your code run? ...  (Press <space> to select, <a> to toggle all, <i> to invert selection)
+√ Browser
+√ Node
+
+// 설정파일 선택
+√ How would you like to use ESLint? · problems    
+√ What type of modules does your project use? · esm
+√ Which framework does your project use? · none
+√ Does your project use TypeScript? · No / Yes
+√ Where does your code run? · browser
+? What format do you want your config file to be in? ... 
+> JavaScript
+  YAML
+  JSON
+
+// eslint 최신버전 설치 유무
+eslint@latest
+? Would you like to install them now with npm? » No / Yes
+```
+
+```js
+// .eslintrc.js
+// npx eslint --init으로 만들어진 eslint 설정
+module.exports = {
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "rules": {
+    }
+};
+```
+
+<br/>
+
+---
+
 # 바벨
 - 크로스브라우징의 혼란을 해결해 줄 수 있는 것이 바벨.
 - ES6+로 작성한 코드를 모든 브라우저에서 동작하도록 호환성을 지켜줌
