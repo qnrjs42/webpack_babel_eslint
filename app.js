@@ -1,5 +1,9 @@
-console.log()
-(function () {})()
+// var foo = "";
+
+// console.log();
+
+// console.log()
+// (function () {})()
 
 // new Promise();
 

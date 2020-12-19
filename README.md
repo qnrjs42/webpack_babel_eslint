@@ -1,4 +1,100 @@
-# 린트
+# 프리티어 [Prettier]
+- 코드를 보기 좋게 만듦.
+- ESLint의 포매팅과 겹치는 부분도 있지만 프리티어는 일관적인 스타일로 코드를 다듬는다.
+- 코드 품질과 관련된 기능은 하지 않는 것이 ESLint와 다른 점이다.
+
+```
+npm i prettier
+```
+
+```js
+// app.js
+console.log()
+```
+
+```
+npx prettier app.js
+-> console.log();
+
+npx prettier app.js --write
+app.js 파일 자체가 수정된다.
+```
+
+```
+foo(testtesttesttesttesttest123(),testtesttesttesttesttest1234(),testtesttesttesttesttest12345(),testtesttesttesttesttest123456());
+
+npx prettier app.js --write
+foo(
+  testtesttesttesttesttest123(),
+  testtesttesttesttesttest1234(),
+  testtesttesttesttesttest12345(),
+  testtesttesttesttesttest123456()
+);
+```
+
+### ESLint + Prettier
+
+```js
+// app.js
+var foo = "";
+
+console.log();;;;;;;
+```
+
+```
+npx eslint app.js --fix
+error  'foo' is assigned a value but never used  no-unused-vars
+
+npx prettier app.js --write
+console.log(); 으로 변경
+```
+
+### eslint-plugin-prettier
+- 프리티어 규칙을 ESLint 규칙으로 추가하는 플로그인
+
+```
+npm i eslint-plugin-prettier
+```
+
+```js
+// app.js
+var foo = '';
+
+console.log();;;;;;;
+```
+
+```js
+// .eslintrc.js
+{
+  // extends: ["eslint:recommended", "eslint-config-prettier"],
+  extends: ["eslint:recommended", "plugin:prettier/recommended"],
+  plugins: [
+    "prettier"
+  ],
+  rules: {
+    "prettier/prettier" : "error" // 프리티어 규칙 위반 시 에러 출력
+  }
+}
+```
+
+```
+npx eslint app.js --fix
+
+1:5  error  'foo' is assigned a value but never used  no-unused-vars
+```
+
+```js
+// app.js
+var foo = "";
+
+console.log();
+```
+
+<br/>
+
+---
+
+# 린트 [Lint]
 - 코드 오류나 버그, 스타일 따위를 점검하는 것을 린트 혹은 린터라고 한다.
 
 ```
@@ -224,7 +320,7 @@ npm run lint
 
 ---
 
-# 바벨
+# 바벨 [Babel]
 - 크로스브라우징의 혼란을 해결해 줄 수 있는 것이 바벨.
 - ES6+로 작성한 코드를 모든 브라우저에서 동작하도록 호환성을 지켜줌
 - 바벨로 변환하는 것을 '트랜스파일'이라고 한다.
@@ -693,7 +789,7 @@ npm run build
 
 ---
 
-# 웹팩을 사용하는 이유
+# 웹팩 [Webpack]
 
 ## 문제점 
 
