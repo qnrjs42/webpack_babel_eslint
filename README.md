@@ -200,6 +200,26 @@ module.exports = {
 };
 ```
 
+```json
+// package.json
+
+"scripts": {
+  "build": "webpack --progress",
+  "lint": "eslint src --fix"
+},
+
+// src 폴더 전부 eslint로 검사하고 자동으로 고칠 수 있는건 고침
+```
+
+```
+npm run lint
+
+10:7  error  'foo' is assigned a value but never used  no-unused-vars
+-> 사용하지 않는 변수 'foo'
+
+사용하지 않는 변수는 지우는 것이 좋다.
+```
+
 <br/>
 
 ---
