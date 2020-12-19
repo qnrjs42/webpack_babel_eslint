@@ -1,10 +1,85 @@
+# 자동화
+- 린트는 코딩할 때마다 수시로 실행해야하는데 자동화 처리하는게 좋다.
+- "깃 훅을 사용하는 방법", "에디터 확장 도구"
+
+<br/>
+
+## 깃 훅을 사용하는 방법
+- 커밋 전, 푸쉬 전 등등 깃 커맨드 실행 시점에 끼여들 수 있는 훅을 제공.
+- 린트에 통과하지 못하면 푸쉬 제한
+
+### husky
+
+```
+npm i -D husky
+```
+
+```json
+// package.json
+
+"husky": {
+  "hooks": {
+    "pre-commit": "echo '이것은 커밋전에 출력됨'"
+  }
+}
+
+"pre-commit": "eslint app.js --fix"
+-> 커밋 직전에 eslint를 실행
+```
+
+<br/>
+
+### lint-staged
+- 커밋 시 변경된 파일만 린트로 검사
+
+```
+npm i -D lint-staged
+```
+
+```json
+// package.json
+"husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+"lint-staged": {
+  "*.js": "eslint --fix"
+}
+```
+<br/>
+
+
+## 에디터 확장 도구
+- vs-code의 eslint, prettier
+
+```json
+// 저장 시 자동으로 eslint 검사
+
+'설정' - 'JSON 열기'
+
+// settings.json
+{
+  // 저장할 때 eslint 검사
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint: true
+  }
+}
+```
+
+
+
+<br/>
+
+---
+
 # 프리티어 [Prettier]
 - 코드를 보기 좋게 만듦.
 - ESLint의 포매팅과 겹치는 부분도 있지만 프리티어는 일관적인 스타일로 코드를 다듬는다.
 - 코드 품질과 관련된 기능은 하지 않는 것이 ESLint와 다른 점이다.
 
 ```
-npm i prettier
+npm i -D prettier
 ```
 
 ```js
@@ -53,7 +128,7 @@ console.log(); 으로 변경
 - 프리티어 규칙을 ESLint 규칙으로 추가하는 플로그인
 
 ```
-npm i eslint-plugin-prettier
+npm i -D eslint-plugin-prettier
 ```
 
 ```js
@@ -98,7 +173,7 @@ console.log();
 - 코드 오류나 버그, 스타일 따위를 점검하는 것을 린트 혹은 린터라고 한다.
 
 ```
-npm i eslint
+npm i -D eslint
 ```
 
 ## 예시
@@ -327,7 +402,7 @@ npm run lint
 - 트랜스파일은 추상화 수준을 유지한 상태로 코드를 변환
 
 ```
-npm i @babel/core @babel/cli
+npm i -D @babel/core @babel/cli
 ```
 
 ```
@@ -433,7 +508,7 @@ var alert = msg => window.alert(msg);
 const, let 처럼 블록 스코핑을 따르는 예약어를 함수 스코핑을 사용하는 var로 변경한다.
 
 ```
-npm i @babel/plugin-transform-block-scoping
+npm i -D @babel/plugin-transform-block-scoping
 ```
 
 ```js
@@ -465,7 +540,7 @@ var alert = msg => window.alert(msg);
 ## @babel/plugin-transform-arrow-functions
 
 ```
-npm i @babel/plugin-transform-arrow-functions
+npm i -D @babel/plugin-transform-arrow-functions
 ```
 
 ```js
@@ -498,7 +573,7 @@ var alert = function (msg) {
 - 'use strict' 구문
 
 ```
-npm i @babel/plugin-transform-strict-mode
+npm i -D @babel/plugin-transform-strict-mode
 ```
 
 ```
@@ -590,7 +665,7 @@ var alert = function (msg) {
 preset-env는 연도별로 프리셋을 제공했지만 env 하나로 합쳐짐
 
 ```
-npm i @babel/preset-env
+npm i -D @babel/preset-env
 ```
 
 ```js
@@ -760,8 +835,8 @@ new Promise();
 ## 웹팩 통합
 
 ```
-npm i babel-loader
-npm i core-js@2
+npm i -D babel-loader
+npm i -D core-js@2
 ```
 
 ```js
@@ -918,7 +993,7 @@ module.exports = {
 
 ## webpack 설정 순서
 
-### 1. npm i webpack webpack-cli
+### 1. npm i -D webpack webpack-cli
 
 
 ### 2. package.json
@@ -996,7 +1071,7 @@ module: {
 
 ### 자주 사용하는 로더
 
-- npm i css-loader style-loader file-loader url-loader
+- npm i -D css-loader style-loader file-loader url-loader
 
 ```js
 // app.js
@@ -1118,7 +1193,7 @@ console.log(api.domain); // http://dev/api/domain.com
 - HTML 후처리하는데 사용. 빌드 타임의 값을 넣거나 코드를 압축
 
 ```
-npm i html-webpack-plugin
+npm i -D html-webpack-plugin
 ```
 
 ```html
@@ -1160,7 +1235,7 @@ new HtmlWebpackPlugin({
 - 이전 빌드내용이 덮여 씌여지면 상관없지만 그렇지 않으면 아웃풋 폴더에 여전히 남아 있을 수 있다.
 
 ```
-npm i clean-webpack-plugin
+npm i -D clean-webpack-plugin
 ```
 ```js
 // webpack.config.js
@@ -1182,7 +1257,7 @@ plugins: [
 
 
 ```
-npm i mini-css-extract-plugin
+npm i -D mini-css-extract-plugin
 ```
 ```js
 // webpack.config.js
