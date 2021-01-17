@@ -1,4 +1,96 @@
+
+
+# 핫 로딩
+
+- 전체 화면을 갱신 하지 않고 변경한 모듈만 바꿔치기
+- 즉 코드 작성하고 저장할 때 새로고침 시 데이터가 날라가지 않고, 바뀌는 부분만 바뀐다.
+
+```js
+// webpack.config.js
+devServer: {
+    hot: true,
+}
+```
+
+- style-loader, react-hot-loader(refresh로 변경), file-loader 또한 핫 로딩은 지원한다.
+
+```js
+// src/app.js
+
+import "./app.css";
+import form from "./form";
+import result from "./result";
+
+let resultEl;
+let formEl;
+
+document.addEventListener("DOMContentLoaded", async () => {
+  formEl = document.createElement("div");
+  formEl.innerHTML = form.render();
+  document.body.appendChild(formEl);
+
+  resultEl = document.createElement("div");
+  resultEl.innerHTML = await result.render();
+  document.body.appendChild(resultEl);
+});
+
+if (module.hot) {
+  console.log("핫 모듈 켜짐");
+
+  module.hot.accept("./result", async () => {
+    console.log("result 모듈 변경됨");
+    resultEl.innerHTML = await result.render();
+  });
+
+  module.hot.accept("./form", async () => {
+    console.log("form 모듈 변경됨");
+    formEl.innerHTML = form.render();
+  });
+}
+```
+
+```js
+// src/form.js
+const form = {
+  render() {
+    return `
+      <form>
+        <input />
+        <button type="submit">검색</button>
+        <button type="result">취소</button>
+      </form>
+    `;
+  },
+};
+
+export default form;
+```
+
+```js
+// src/result.js
+import axios from "axios";
+
+const result = {
+  async render() {
+    const res = await axios.get("/api/users");
+
+    return (res.data || [])
+      .map((user) => {
+        return `<div>${user.id}: ${user.name}</div>`;
+      })
+      .join("");
+  },
+};
+
+export default result;
+```
+
+
+
+---
+
 # 웹팩 개발 서버
+
 - ajax 방식 api 연동은 cors 정책 때문에 서버가 필요.
 
 ```
@@ -89,7 +181,7 @@ devServer: {
 ]
 ```
 
-### 목업(더미데이터) api 작업이 많을 때 connect-api-mocker
+## 목업(더미데이터) api 작업이 많을 때 (connect-api-mocker)
 
 ```
 npm i -D connect-api-mocker
@@ -126,7 +218,7 @@ const res = await axios.get("api/users");
 console.log(res.data);
 ```
 
-### 실 서버 연결할 때 proxy
+## 실 서버 연결할 때 (proxy)
 
 ```js
 // webpack.config.js
