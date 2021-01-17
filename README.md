@@ -1,3 +1,147 @@
+# 웹팩 개발 서버
+- ajax 방식 api 연동은 cors 정책 때문에 서버가 필요.
+
+```
+npm i -D webpack-dev-server
+```
+
+```json
+// package.json
+"scripts": {
+  "start": "webpack-dev-server"
+},
+```
+
+```
+npm start
+```
+<br/>
+
+```js
+// webpack.config.js
+module.exports = {
+  devServer: {
+    contentBase: path.join(__dirname, "dist"),
+    publicPath: "/",
+    host: "dev.domain.com",
+    overlay: true,
+    port: 8081,
+    stats: "errors-only",
+    historyApiFallback: true,
+  }
+}
+```
+- contentBase: 정적파일을 제공할 경로. 기본값은 웹팩 아웃풋
+- publicPath: 브라우저를 통해 접근하는 경로 기본값은 "/"
+- host: 개발환경에서 도메인을 맞춰야하는 상황에서 사용.
+  쿠키 기반 인증은 인증 서버와 동일한 도메인으로 개발환경을 맞추어야 한다.
+  운영체제의 호스트 파일에 해당 도메인과 127.0.0.1 연결 추가한 뒤 host 속성에 도메인을 설정해서 사용한다.
+- overlay: 빌드 시 에러나 경고를 브라우저 화면에 표시.
+- port: 개발 서버 포트 번호를 설정. 기본값: 8080
+- stats: 메시지 수준 "none", "errors-only", "minimal", "normal", "verbose"
+- historyApiFallback: 히스토리 API를 사용하는 SPA 개발시 설정. 404 발생 시 index.html로 리다이렉트
+
+
+```json
+// package.json
+"scripts": {
+  "start": "webpack-dev-server --progress"
+},
+
+--progress: 빌드 진행율을 보여줌.
+```
+
+```json
+// webpack.config.js
+devServer: {
+    before: (app) => {
+      app.get("/api/users", (req, res) => {
+        res.json([
+          {
+            id: 1,
+            name: "Alice",
+          },
+          {
+            id: 2,
+            name: "Bek",
+          },
+        ]);
+      });
+    },
+  },
+```
+
+- devServer - before를 통해 서버 대용으로 사용할 수 있다.
+- express 처럼 사용 가능.
+
+```json
+// url: localhost:8080/api/users
+
+[
+    {
+        "id": 1,
+        "name": "Alice"
+    },
+    {
+        "id": 2,
+        "name": "Bek"
+    }
+]
+```
+
+### 목업(더미데이터) api 작업이 많을 때 connect-api-mocker
+
+```
+npm i -D connect-api-mocker
+```
+
+```json
+// /mocks/api/users/GET.json
+[
+  {
+    "id": 1,
+    "name": "Alice"
+  },
+  {
+    "id": 2,
+    "name": "Bek"
+  }
+]
+```
+
+```js
+// webpack.config.js
+const apiMocker = require("connect-api-mocker");
+
+before: (app) => {
+  app.use(apiMocker("/api", "mocks/api"));
+},
+```
+
+- 위 처럼 app.use() 미들웨어처럼 사용할 수 있다.
+
+```js
+const res = await axios.get("api/users");
+
+console.log(res.data);
+```
+
+### 실 서버 연결할 때 proxy
+
+```js
+// webpack.config.js
+devServer: {
+    proxy: {
+      "/api": "http://localhost:8081",
+    },
+},
+```
+
+
+
+
+---
+
 # 자동화
 - 린트는 코딩할 때마다 수시로 실행해야하는데 자동화 처리하는게 좋다.
 - "깃 훅을 사용하는 방법", "에디터 확장 도구"
