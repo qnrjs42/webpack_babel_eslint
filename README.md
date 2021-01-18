@@ -1,5 +1,163 @@
 
 
+# 최적화
+
+```js
+// webpack.config.js
+const mode = process.env.NODE_ENV || "development";
+
+module.exports = {
+  mode,
+```
+
+- mode `development`는 디버깅 편의를 위해 2 개 플러그인을 사용한다.
+
+  * NamedChunksPlugin
+
+  - NamedModulesPlugin
+
+
+
+- mode `production`은 자바스크립트 결과물을 최소화 하기 위해 7 개 플러그인을 사용한다.
+
+  - FlagDependencyUsagePlugin
+  - FlagIncludedCunksPlugin
+  - ModuleConcatenationPlugin
+  - NoEmitOnErrorsPlugin
+  - OccurrenceOrderPlugin
+  - SideEffectsFlagPlugin
+  - TerserPlugin
+
+  ```json
+  "build": "cross-env NODE_ENV=production webpack --progress"
+  
+  ---
+  npm run build
+  ```
+
+  ## optimazation 속성으로 최적화
+
+  - HtmlWebpackPlugin이 html 파일을 압축한 것처럼 css 파일도 빈칸을 없애는 압축을 하려면 `optimize-css-assets-webpack-plugin`을 사용
+
+  ```
+  npm i -D optimize-css-assets-webpack-plugin
+  ```
+
+  ```js
+  // webpack.config.js
+  const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+  
+  optimization: {
+      minimizer:
+        mode === "production"
+          ? [new OptimizeCSSAssetsPlugin()]: [],
+    },
+  ```
+
+  
+
+  - TersetWebpackPlugin은 자바스크립트 코드를 난독화하고 debugger 구문을 제거.
+
+  ```
+  npm i -D terser-webpack-plugin
+  ```
+
+  ```js
+  // webpack.config.js
+  const TerserPlugin = require("terser-webpack-plugin");
+  
+  optimization: {
+      minimizer:
+        mode === "production"
+          ? [
+              new OptimizeCSSAssetsPlugin(),
+              new TerserPlugin({
+                terserOptions: {
+                  compress: {
+                    drop_console: true, // 콘솔 로그를 제거한다
+                  },
+                },
+              }),
+            ]
+          : [],
+    },
+  ```
+
+## 코드 스플리팅
+
+```js
+// webpack.config.js
+
+entry: {
+    main: "./src/app.js",
+    result: "./src/result.js",
+},
+
+optimization: {
+    splitChunks: {
+      chunks: "all",
+    },
+  },
+```
+
+- `entry`를 main과 result로 나누게 되면 중복 코드가 발생하는데 `splitCunks`를 통해 중복 제거할 수 있다.
+
+## 동적 임포트(dynamic import)
+
+```js
+// src/app.js
+import(/* webpackChunkName: "result" */ "./result.js").then(async (m) => {
+    const result = m.default;
+    resultEl = document.createElement("div");
+    resultEl.innerHTML = await result.render();
+    document.body.appendChild(resultEl);
+  });
+```
+
+- 위 코드는 코드 스플리팅의 entry - result, optimization - splitChunks 효과를 낼 수 있다.
+
+## externals
+
+- axios 같은 써드파티 라이브러리는 이미 빌드 과정을 거쳤기 때문에 빌드 프로세스에서 제외하는 것이 좋다.
+
+```js
+// webpack.config.js
+module.exports = {
+	externals: {
+		axios: 'axios',
+	}
+}
+```
+
+```
+npm i -D copy-webpack-plugin
+```
+
+```js
+// webpack.config.js
+
+const CopyPlugin = require("copy-webpack-plugin");
+
+plugins: [
+    new CopyPlugin([
+      {
+        from: "./node_modules/axios/dist/axios.min.js",
+        to: "./axios.min.js", // 목적지 파일에 들어간다
+      },
+    ]),
+]
+```
+
+```html
+// src/index.html
+
+<body> <script src="axios.min.js"></script> </body>
+```
+
+
+
+---
+
 # 핫 로딩
 
 - 전체 화면을 갱신 하지 않고 변경한 모듈만 바꿔치기

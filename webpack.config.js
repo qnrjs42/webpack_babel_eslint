@@ -4,9 +4,9 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-// const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-// const TerserPlugin = require("terser-webpack-plugin");
-// const CopyPlugin = require("copy-webpack-plugin");
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 const apiMocker = require("connect-api-mocker");
 
 const mode = process.env.NODE_ENV || "development";
@@ -15,6 +15,7 @@ module.exports = {
   mode,
   entry: {
     main: "./src/app.js",
+    // result: "./src/result.js",
   },
   output: {
     filename: "[name].js",
@@ -77,12 +78,12 @@ module.exports = {
       hash: mode === "production",
     }),
     new CleanWebpackPlugin(),
-    // new CopyPlugin([
-    //   {
-    //     from: "./node_modules/axios/dist/axios.min.js",
-    //     to: "./axios.min.js", // 목적지 파일에 들어간다
-    //   },
-    // ]),
+    new CopyPlugin([
+      {
+        from: "./node_modules/axios/dist/axios.min.js",
+        to: "./axios.min.js", // 목적지 파일에 들어간다
+      },
+    ]),
     ...(mode === "production"
       ? [new MiniCssExtractPlugin({ filename: `[name].css` })]
       : []),
@@ -91,18 +92,21 @@ module.exports = {
     minimizer:
       mode === "production"
         ? [
-            // new OptimizeCSSAssetsPlugin(),
-            // new TerserPlugin({
-            //   terserOptions: {
-            //     compress: {
-            //       drop_console: true, // 콘솔 로그를 제거한다
-            //     },
-            //   },
-            // }),
+            new OptimizeCSSAssetsPlugin(),
+            new TerserPlugin({
+              terserOptions: {
+                compress: {
+                  drop_console: true, // 콘솔 로그를 제거한다
+                },
+              },
+            }),
           ]
         : [],
+    // splitChunks: {
+    //   chunks: "all",
+    // },
   },
-  // externals: {
-  //   axios: "axios",
-  // },
+  externals: {
+    axios: "axios",
+  },
 };
